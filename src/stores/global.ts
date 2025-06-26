@@ -1,6 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
-export const useGlobalStore = defineStore('globalStore', {
+export const useStoreGlobal = defineStore('storeGlobal', {
   state: () => ({
     app: {
       name: 'Custom Incremental',
@@ -13,5 +13,5 @@ export const useGlobalStore = defineStore('globalStore', {
 });
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useGlobalStore, import.meta.hot));
+  import.meta.hot.accept(acceptHMRUpdate(useStoreGlobal, import.meta.hot));
 }

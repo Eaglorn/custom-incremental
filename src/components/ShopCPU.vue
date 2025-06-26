@@ -1,18 +1,104 @@
 <template>
-  <div>
-    <div class="text-h4 q-mb-md">Процессор</div>
-    <q-input v-model="value" label="Значение" class="my-ipnut" :disable="true" />
-    <q-input v-model="multiply" label="Множитель" class="my-ipnut" :disable="true" />
-    <q-input v-model="costMain" label="Основная стоимость" class="my-ipnut" :disable="true" />
-    <q-input
-      v-model="costMultiply"
-      label="Стоимость множителя (в процессорах)"
-      class="my-ipnut"
-      :disable="true"
-    />
-    <q-btn color="white" text-color="black" label="Купить" @click="onBuyMain" />
-    <q-btn color="white" text-color="black" label="Умножить" @click="onBuyMultiply" />
-  </div>
+  <q-card flat bordered class="q-pa-lg">
+    <div class="text-h5 text-weight-bold q-mb-lg text-primary flex items-center">
+      <q-icon name="fa-duotone fa-microchip" class="q-mr-md" size="32px" />
+      Процессор
+    </div>
+    <q-form>
+      <div class="row q-col-gutter-lg">
+        <div class="col-12 col-md-6">
+          <q-input
+            v-model="value"
+            label="Значение"
+            class="my-ipnut q-mb-md"
+            :disable="true"
+            dense
+            :label-class="'text-weight-bold text-body1'"
+            :input-class="'text-h6 text-primary'"
+            color="primary"
+            outlined
+          >
+            <template v-slot:prepend>
+              <q-icon name="fa-duotone fa-gauge" />
+            </template>
+          </q-input>
+        </div>
+        <div class="col-12 col-md-6">
+          <q-input
+            v-model="multiply"
+            label="Множитель"
+            class="my-ipnut q-mb-md"
+            :disable="true"
+            dense
+            :label-class="'text-weight-bold text-body1'"
+            :input-class="'text-h6 text-primary'"
+            color="primary"
+            outlined
+          >
+            <template v-slot:prepend>
+              <q-icon name="fa-duotone fa-xmark" />
+            </template>
+          </q-input>
+        </div>
+        <div class="col-12 col-md-6">
+          <q-input
+            v-model="costMain"
+            label="Основная стоимость"
+            class="my-ipnut q-mb-md"
+            :disable="true"
+            dense
+            :label-class="'text-weight-bold text-body1'"
+            :input-class="'text-h6 text-primary'"
+            color="primary"
+            outlined
+          >
+            <template v-slot:prepend>
+              <q-icon name="fa-duotone fa-coins" />
+            </template>
+          </q-input>
+        </div>
+        <div class="col-12 col-md-6">
+          <q-input
+            v-model="costMultiply"
+            label="Стоимость множителя"
+            class="my-ipnut q-mb-md"
+            :disable="true"
+            dense
+            :label-class="'text-weight-bold text-body1'"
+            :input-class="'text-h6 text-primary'"
+            color="primary"
+            outlined
+          >
+            <template v-slot:prepend>
+              <q-icon name="fa-duotone fa-arrow-up-right-dots" />
+            </template>
+          </q-input>
+        </div>
+      </div>
+      <div class="row q-mt-md">
+        <div class="col-6">
+          <q-btn
+            color="primary"
+            outline
+            label="Купить"
+            class="full-width"
+            @click="onBuyMain"
+            size="lg"
+          />
+        </div>
+        <div class="col-6">
+          <q-btn
+            color="primary"
+            outline
+            label="Умножить"
+            class="full-width"
+            @click="onBuyMultiply"
+            size="lg"
+          />
+        </div>
+      </div>
+    </q-form>
+  </q-card>
 </template>
 
 <script setup lang="ts">
