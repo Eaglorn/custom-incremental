@@ -14,7 +14,8 @@
     "dev:el": "quasar dev -m electron",
     "build": "quasar build",
     "postinstall": "quasar prepare",
-    "up": "yarn install && yarn upgrade"
+    "up": "yarn install && yarn upgrade",
+    "http:server": "npx http-server dist/spa -o"
   },
   "dependencies": {
     "@quasar/extras": "^1.17.0",
