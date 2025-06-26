@@ -1447,6 +1447,11 @@ base64-js@^1.3.1, base64-js@^1.5.1:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
+bignumber.js@^9.3.0:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.3.0.tgz#bdba7e2a4c1a2eba08290e8dcad4f36393c92acd"
+  integrity sha512-EM7aMFTXbptt/wZdMlBv2t8IViwQL+h6SLHosp8Yf0dqJMTnY6iL32opnAB6kAdL0SZPuvcAzFr31o0c/R3/RA==
+
 binary-extensions@^2.0.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.3.0.tgz#f6e14a97858d327252200242d4ccfe522c445522"
@@ -1520,6 +1525,18 @@ braces@^3.0.3, braces@~3.0.2:
   integrity sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==
   dependencies:
     fill-range "^7.1.1"
+
+break_eternity.js@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/break_eternity.js/-/break_eternity.js-2.1.1.tgz#ed00b142d52e7add78c66d31486c48425010cab0"
+  integrity sha512-hxb38+Val4WhZhomkRav3qhaS5uLmcdSiD4F7oYkT4EYM34ezk27oB0IFN/+EOKgnuYxO4JBV7pLBMVaD4a6AA==
+
+break_infinity.js@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/break_infinity.js/-/break_infinity.js-2.2.0.tgz#7336505738f0fdc2c0b72d29ec1595909557ca4b"
+  integrity sha512-Li+150FfqGDj4gcJrgEJatFAR0OmfZyZLBGFKSHgjWKqKgWRm7GA+OmSSHwDFqkdOOjoY+R8X/jyDX/9MQEjmA==
+  dependencies:
+    pad-end "^1.0.2"
 
 browserslist@^4.24.4:
   version "4.25.1"
@@ -3623,6 +3640,11 @@ package-json-from-dist@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/package-json-from-dist/-/package-json-from-dist-1.0.1.tgz#4f1471a010827a86f94cfd9b0727e36d267de505"
   integrity sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==
+
+pad-end@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/pad-end/-/pad-end-1.0.2.tgz#6b41a42fdb7effa55858bb77dade52eee388e6cc"
+  integrity sha512-pHkQejQ2oo08iXEDDFYxUK1xPe8L5fpbLSpkKk+ytimW70S8golMYFP9nAPTLXW6DTt+bF5QLcbswx5imMszHg==
 
 param-case@^3.0.4:
   version "3.0.4"
