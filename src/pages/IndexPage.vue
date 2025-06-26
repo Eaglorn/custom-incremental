@@ -1,43 +1,16 @@
 <template>
   <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
+    <q-btn color="white" text-color="black" label="Standard" />
+    <q-btn color="primary" label="Primary" />
+    <q-btn color="secondary" label="Secondary" />
+    <q-btn color="amber" glossy label="Amber" />
+    <q-btn color="brown-5" label="Brown 5" />
+    <q-btn color="deep-orange" glossy label="Deep Orange" />
+    <q-btn color="purple" label="Purple" />
+    <q-btn color="black" label="Black" />
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ExampleComponent.vue';
-
-const todos = ref<Todo[]>([
-  {
-    id: 1,
-    content: 'ct1'
-  },
-  {
-    id: 2,
-    content: 'ct2'
-  },
-  {
-    id: 3,
-    content: 'ct3'
-  },
-  {
-    id: 4,
-    content: 'ct4'
-  },
-  {
-    id: 5,
-    content: 'ct5'
-  }
-]);
-
-const meta = ref<Meta>({
-  totalCount: 1200
-});
+import type {} from 'components/models';
 </script>
