@@ -6,6 +6,32 @@ export const useStoreGame = defineStore('storeGame', {
     epicNumber: new Decimal(0),
     capacity: new Decimal(1000),
     timer: 1000,
+    shop: {
+      cpu: {
+        value: new Decimal(1),
+        multiply: new Decimal(1),
+        cost: {
+          main: new Decimal(50),
+          multiply: new Decimal(5),
+        },
+      },
+      hard: {
+        value: new Decimal(0),
+        multiply: new Decimal(1),
+        cost: {
+          main: new Decimal(150),
+          multiply: new Decimal(12),
+        },
+      },
+      ram: {
+        value: new Decimal(0),
+        multiply: new Decimal(1),
+        cost: {
+          main: new Decimal('1e7'),
+          multiply: new Decimal(80),
+        },
+      },
+    },
     research: {
       researchingKey: '',
       list: {
@@ -38,33 +64,6 @@ export const useStoreGame = defineStore('storeGame', {
           costMultiply: 150,
           timeMultiply: 5,
           maxLevel: 100,
-        },
-      },
-    },
-
-    shop: {
-      cpu: {
-        value: new Decimal(1),
-        multiply: new Decimal(1),
-        cost: {
-          main: new Decimal(100),
-          multiply: new Decimal(5),
-        },
-      },
-      hard: {
-        value: new Decimal(0),
-        multiply: new Decimal(1),
-        cost: {
-          main: new Decimal(250),
-          multiply: new Decimal(12),
-        },
-      },
-      ram: {
-        value: new Decimal(0),
-        multiply: new Decimal(1),
-        cost: {
-          main: new Decimal('1e7'),
-          multiply: new Decimal(80),
         },
       },
     },

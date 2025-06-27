@@ -13,6 +13,7 @@
     "dev": "quasar dev",
     "dev:el": "quasar dev -m electron",
     "build": "quasar build",
+    "build:el": "quasar build -m electron",
     "postinstall": "quasar prepare",
     "up": "yarn install && yarn upgrade",
     "http:server": "npx http-server dist/spa -o"
