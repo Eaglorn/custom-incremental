@@ -14,24 +14,15 @@
             storeGame.capacity.plus(storeGame.shop.hard.value).toString()
           }}</span>
         </div>
-        <div
-          style="
-            flex: 1 1 0;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            min-width: 220px;
-            max-width: 300px;
-            height: 36px;
-          "
-        >
-          <div v-if="currentResearch" class="row items-center" style="height: 36px">
-            <q-icon name="fa-duotone fa-flask" color="secondary" size="20px" class="q-mr-xs" />
-            <span class="text-weight-medium" style="font-size: 1rem; white-space: nowrap">
-              {{ currentResearch.title }}: {{ currentResearchTime }} сек.
+        <div class="banner-research-status" style="font-size: 1rem; white-space: nowrap">
+          <div v-if="currentResearch" class="row items-center">
+            <span class="banner-research-title" style="font-size: 1rem; white-space: nowrap">
+              {{ currentResearchTime }} сек.
+              <q-icon name="fa-duotone fa-flask" color="secondary" size="20px" class="q-ml-xs" />
+              {{ currentResearch.title }}
             </span>
           </div>
-          <div v-else style="height: 36px; min-width: 120px"></div>
+          <div v-else></div>
         </div>
       </div>
     </q-banner>
@@ -137,13 +128,13 @@ import ShopCPU from 'src/components/ShopCPU.vue';
 import ShopHard from 'src/components/ShopHard.vue';
 import ShopRAM from 'src/components/ShopRAM.vue';
 import ResearchBase from 'src/components/ResearchBase.vue';
-import type {} from 'components/models';
+import { researchMeta } from 'src/constants/researchMeta';
 
 const storeGame = useStoreGame();
 
 const tab = ref('shop');
-const innerShop = ref('innerShop');
-const innerResearch = ref('innerResearch');
+const innerShop = ref('innerShopCPU');
+const innerResearch = ref('innerResearchBase');
 const splitterModel = ref(20);
 
 let timerId: ReturnType<typeof setInterval> | null = null;
@@ -160,6 +151,10 @@ const startTimer = () => {
   }, storeGame.timer);
 };
 
+onMounted(() => {
+  startTimer();
+});
+
 watch(
   () => storeGame.timer,
   () => {
@@ -167,19 +162,9 @@ watch(
   },
 );
 
-onMounted(() => {
-  startTimer();
-});
-
 onBeforeUnmount(() => {
   if (timerId) clearInterval(timerId);
 });
-
-const researchMeta = [
-  { key: 'cpuPow', title: 'Ускорение процессора' },
-  { key: 'ramPow', title: 'Расширение оперативной памяти' },
-  { key: 'costDescrease', title: 'Оптимизация множителей.' },
-];
 
 const researchingKey = computed(() => storeGame.research.researchingKey);
 const researchList = computed(() => storeGame.research.list);
@@ -220,4 +205,23 @@ const currentResearchTime = computed(() => {
 
 .q-tabs .q-tab:not(.q-tab--active)
   color: #607d8b !important
+
+.banner-research-status
+  flex: 1 1 0
+  display: flex
+  align-items: center
+  justify-content: flex-end
+  min-width: 220px
+  max-width: 400px
+  height: 36px
+  min-height: 36px
+  padding-right: 24px
+
+.banner-research-title
+  max-width: 300px
+  overflow: hidden
+  text-overflow: ellipsis
+  white-space: nowrap
+  display: inline-block
+  vertical-align: middle
 </style>

@@ -12,7 +12,7 @@ export const useStoreGame = defineStore('storeGame', {
         cpuPow: {
           cost: new Decimal(3000),
           currentTime: new Decimal(10),
-          time: new Decimal(10),
+          time: new Decimal(60),
           bonus: 0.01,
           level: 0,
           costMultiply: 100,
@@ -22,7 +22,7 @@ export const useStoreGame = defineStore('storeGame', {
         ramPow: {
           cost: new Decimal('1e6'),
           currentTime: new Decimal(10),
-          time: new Decimal(10),
+          time: new Decimal(240),
           bonus: 0.01,
           level: 0,
           costMultiply: 150,
@@ -32,7 +32,7 @@ export const useStoreGame = defineStore('storeGame', {
         costDescrease: {
           cost: new Decimal(1000),
           currentTime: new Decimal(10),
-          time: new Decimal(10),
+          time: new Decimal(100),
           bonus: new Decimal(2),
           level: 0,
           costMultiply: 150,

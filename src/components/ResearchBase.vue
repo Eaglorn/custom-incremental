@@ -8,9 +8,18 @@
       bordered
       :class="{
         'active-research': researchingKey === meta.key,
-        'inactive-research': researchingKey && researchingKey !== meta.key,
+        'inactive-research':
+          (researchingKey && researchingKey !== meta.key) ||
+          getResearch(meta.key).level >= getResearch(meta.key).maxLevel,
+        'completed-research': getResearch(meta.key).level >= getResearch(meta.key).maxLevel,
       }"
     >
+      <div
+        v-if="getResearch(meta.key).level >= getResearch(meta.key).maxLevel"
+        class="completed-banner"
+      >
+        Завершено
+      </div>
       <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 10]" class="tooltip-desc">
         <div class="tooltip-title">{{ meta.title }}</div>
         <div class="tooltip-text">
@@ -77,41 +86,12 @@
 import { computed } from 'vue';
 import { useStoreGame } from 'src/stores/game';
 import Decimal from 'break_eternity.js';
+import type { Research } from 'components/models';
+import { researchMeta } from 'src/constants/researchMeta';
 
 const storeGame = useStoreGame();
 
-const researchMeta = [
-  {
-    key: 'cpuPow',
-    title: 'Ускорение процессора',
-    description: 'Процессоры увеличивают прирост в степени. За каждое улучшение +0.01.',
-  },
-  {
-    key: 'ramPow',
-    title: 'Расширение оперативной памяти',
-    description:
-      'Оперативная память увеличивает прирост хранилища в степени. За каждое улучшение +0.01.',
-  },
-  {
-    key: 'costDescrease',
-    title: 'Оптимизация множителей.',
-    description: 'Снижает стоимость апгрейдов множителей. За каждое улучшение в 2 раза.',
-  },
-];
-
-const researchList = storeGame.research.list as Record<
-  string,
-  {
-    cost: Decimal;
-    currentTime: Decimal;
-    time: Decimal;
-    bonus: Decimal | number;
-    level: number;
-    costMultiply: number;
-    timeMultiply: number;
-    maxLevel: number;
-  }
->;
+const researchList = storeGame.research.list as Record<string, Research>;
 
 function getResearch(key: string) {
   if (!researchList[key])
@@ -154,6 +134,8 @@ function startResearch(key: string) {
 
 <style lang="sass">
 .research-card.compact
+  position: relative
+  overflow: hidden
   width: 170px
   min-height: 210px
   font-size: 12px
@@ -224,4 +206,24 @@ function startResearch(key: string) {
 .q-card-actions
   margin-top: 2px
   flex-shrink: 0
+
+.completed-banner
+  position: absolute
+  top: 50%
+  left: 50%
+  width: 140%
+  transform: translate(-50%, -50%)
+  background: rgba(60, 60, 60, 0.40)
+  color: #fff
+  text-align: center
+  font-size: 22px
+  font-weight: 900
+  letter-spacing: 2px
+  z-index: 2
+  pointer-events: none
+  padding: 12px 0
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25)
+  user-select: none
+  border-radius: 8px
+  text-shadow: 0 1px 2px #fff, 0 0 1px #fff, 0 0 2px #fff
 </style>
