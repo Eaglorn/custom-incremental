@@ -1,26 +1,50 @@
 <template>
   <q-page class="column items-stretch full-width full-height">
-    <q-banner
-      class="q-mb-md rounded-borders flex justify-center items-center"
-      style="font-size: 1.4rem; min-height: 40px; padding: 0.5rem 0"
-    >
-      <div class="row items-center justify-center q-gutter-md" style="width: 100%">
-        <div class="row items-center q-gutter-xs">
-          <q-icon name="fa-duotone fa-gauge-high" size="30px" color="primary" />
-          <span class="text-weight-bold text-white text-h4" style="letter-spacing: 1px">
-            {{ storeGame.epicNumber.toString() }}
-          </span>
+    <q-banner style="background: transparent; min-height: 0; padding: 0; margin-top: 8px">
+      <div class="row items-center full-width" style="width: 100%">
+        <div style="flex: 1 1 0"></div>
+        <div class="row items-center justify-center" style="flex: 2 2 0; min-width: 0">
+          <q-icon name="fa-duotone fa-gauge-high" size="24px" color="primary" />
+          <span class="text-weight-bold text-h5 q-mx-xs">{{
+            storeGame.epicNumber.toString()
+          }}</span>
+          <q-icon name="fa-solid fa-arrow-right" size="18px" color="grey-5" />
+          <q-icon name="fa-duotone fa-database" size="24px" color="secondary" class="q-ml-xs" />
+          <span class="text-weight-bold text-h5 q-ml-xs">{{
+            storeGame.capacity.plus(storeGame.shop.hard.value).toString()
+          }}</span>
         </div>
-        <q-icon name="fa-solid fa-arrow-right" size="25px" color="grey-5" />
-        <div class="row items-center q-gutter-xs">
-          <q-icon name="fa-duotone fa-database" size="30px" color="secondary" />
-          <span class="text-weight-bold text-white text-h4" style="letter-spacing: 1px">
-            {{ storeGame.capacity.plus(storeGame.shop.hard.value).toString() }}
-          </span>
+        <div
+          style="
+            flex: 1 1 0;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            min-width: 220px;
+            max-width: 300px;
+            height: 36px;
+          "
+        >
+          <div v-if="currentResearch" class="row items-center" style="height: 36px">
+            <q-icon name="fa-duotone fa-flask" color="secondary" size="20px" class="q-mr-xs" />
+            <span class="text-weight-medium" style="font-size: 1rem; white-space: nowrap">
+              {{ currentResearch.title }}: {{ currentResearchTime }} сек.
+            </span>
+          </div>
+          <div v-else style="height: 36px; min-width: 120px"></div>
         </div>
       </div>
     </q-banner>
-    <q-card class="full-width full-height q-pa-none" style="flex: 1 1 0; align-self: stretch">
+    <q-card
+      class="full-width full-height q-pa-none"
+      style="
+        flex: 1 1 0;
+        align-self: stretch;
+        padding: 8px 0 8px 0;
+        margin-bottom: 8px;
+        margin-top: 8px;
+      "
+    >
       <q-tabs
         v-model="tab"
         dense
@@ -45,9 +69,9 @@
           <q-splitter v-model="splitterModel">
             <template v-slot:before>
               <q-tabs v-model="innerShop" vertical class="text-teal">
-                <q-tab name="innerCPU" icon="fa-duotone fa-microchip" label="Процессор" />
-                <q-tab name="innerHard" icon="fa-duotone fa-hard-drive" label="Жёсткий диск" />
-                <q-tab name="innerRAM" icon="fa-duotone fa-memory" label="Оперативная память" />
+                <q-tab name="innerShopCPU" icon="fa-duotone fa-microchip" label="Процессор" />
+                <q-tab name="innerShopHard" icon="fa-duotone fa-hard-drive" label="Жёсткий диск" />
+                <q-tab name="innerShopRAM" icon="fa-duotone fa-memory" label="Оперативная память" />
               </q-tabs>
             </template>
 
@@ -57,13 +81,13 @@
                 transition-prev="slide-down"
                 transition-next="slide-up"
               >
-                <q-tab-panel name="innerCPU">
+                <q-tab-panel name="innerShopCPU">
                   <ShopCPU />
                 </q-tab-panel>
-                <q-tab-panel name="innerHard">
+                <q-tab-panel name="innerShopHard">
                   <ShopHard />
                 </q-tab-panel>
-                <q-tab-panel name="innerRAM">
+                <q-tab-panel name="innerShopRAM">
                   <ShopRAM />
                 </q-tab-panel>
               </q-tab-panels>
@@ -71,7 +95,31 @@
           </q-splitter>
         </q-tab-panel>
 
-        <q-tab-panel name="research"></q-tab-panel>
+        <q-tab-panel name="research" class="q-pa-none">
+          <q-splitter v-model="splitterModel">
+            <template v-slot:before>
+              <q-tabs v-model="innerResearch" vertical class="text-teal">
+                <q-tab
+                  name="innerResearchBase"
+                  icon="fa-duotone fa-flask"
+                  label="Базовые исследования"
+                />
+              </q-tabs>
+            </template>
+
+            <template v-slot:after>
+              <q-tab-panels
+                v-model="innerResearch"
+                transition-prev="slide-down"
+                transition-next="slide-up"
+              >
+                <q-tab-panel name="innerResearchBase">
+                  <ResearchBase />
+                </q-tab-panel>
+              </q-tab-panels>
+            </template>
+          </q-splitter>
+        </q-tab-panel>
         <q-tab-panel name="infinity"></q-tab-panel>
         <q-tab-panel name="eternity"></q-tab-panel>
         <q-tab-panel name="achievement"></q-tab-panel>
@@ -83,20 +131,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue';
 import { useStoreGame } from 'src/stores/game';
 import ShopCPU from 'src/components/ShopCPU.vue';
 import ShopHard from 'src/components/ShopHard.vue';
 import ShopRAM from 'src/components/ShopRAM.vue';
+import ResearchBase from 'src/components/ResearchBase.vue';
 import type {} from 'components/models';
 
 const storeGame = useStoreGame();
 
 const tab = ref('shop');
-const innerShop = ref('innerCPU');
+const innerShop = ref('innerShop');
+const innerResearch = ref('innerResearch');
 const splitterModel = ref(20);
-
-const timerPeriod = ref(1000);
 
 let timerId: ReturnType<typeof setInterval> | null = null;
 
@@ -109,12 +157,15 @@ const startTimer = () => {
     if (storeGame.epicNumber.gt(capacityFull)) {
       storeGame.epicNumber = capacityFull;
     }
-  }, timerPeriod.value);
+  }, storeGame.timer);
 };
 
-watch(timerPeriod, () => {
-  startTimer();
-});
+watch(
+  () => storeGame.timer,
+  () => {
+    startTimer();
+  },
+);
 
 onMounted(() => {
   startTimer();
@@ -122,6 +173,28 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (timerId) clearInterval(timerId);
+});
+
+const researchMeta = [
+  { key: 'cpuPow', title: 'Ускорение процессора' },
+  { key: 'ramPow', title: 'Расширение оперативной памяти' },
+  { key: 'costDescrease', title: 'Оптимизация множителей.' },
+];
+
+const researchingKey = computed(() => storeGame.research.researchingKey);
+const researchList = computed(() => storeGame.research.list);
+
+type ResearchKey = keyof typeof storeGame.research.list;
+
+const currentResearch = computed(() => {
+  if (!researchingKey.value) return null;
+  const meta = researchMeta.find((m) => m.key === researchingKey.value);
+  return meta || null;
+});
+const currentResearchTime = computed(() => {
+  if (!researchingKey.value) return '';
+  const research = researchList.value[researchingKey.value as ResearchKey];
+  return research?.currentTime?.toFixed?.(0) ?? '';
 });
 </script>
 
