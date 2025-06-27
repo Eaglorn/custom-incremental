@@ -10,9 +10,7 @@
           }}</span>
           <q-icon name="fa-solid fa-arrow-right" size="18px" color="grey-5" />
           <q-icon name="fa-duotone fa-database" size="24px" color="secondary" class="q-ml-xs" />
-          <span class="text-weight-bold text-h5 q-ml-xs">{{
-            storeGame.capacity.plus(storeGame.shop.hard.value).toString()
-          }}</span>
+          <span class="text-weight-bold text-h5 q-ml-xs">{{ storeGame.capacity.toString() }}</span>
         </div>
         <div class="banner-research-status" style="font-size: 1rem; white-space: nowrap">
           <div v-if="currentResearch" class="row items-center">
@@ -177,8 +175,16 @@ function formatEpicNumber(num: Decimal) {
 const startTimer = () => {
   if (timerId) clearInterval(timerId);
   timerId = setInterval(() => {
-    storeGame.epicNumber = storeGame.epicNumber.plus(storeGame.shop.cpu.value);
-    storeGame.capacity = storeGame.capacity.plus(storeGame.shop.ram.value);
+    const parShopCPU = storeGame.shop.cpu;
+    const parResearchCPU = storeGame.research.list.cpuPow;
+    const parShopRAM = storeGame.shop.ram;
+    const parResearchRAM = storeGame.research.list.ramPow;
+    storeGame.epicNumber = storeGame.epicNumber.plus(
+      parShopCPU.value.pow(parResearchCPU.bonus.mul(parResearchCPU.level).plus(1)),
+    );
+    storeGame.capacity = storeGame.capacity.plus(
+      parShopRAM.value.pow(parResearchRAM.bonus).mul(parResearchRAM.level).plus(1),
+    );
     const capacityFull = storeGame.capacity.plus(storeGame.shop.hard.value);
     if (storeGame.epicNumber.gt(capacityFull)) {
       storeGame.epicNumber = capacityFull;

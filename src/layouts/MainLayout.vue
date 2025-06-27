@@ -1,20 +1,31 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="bg-primary-8 text-white">
-      <q-toolbar class="bg-grey-10">
-        <q-toolbar-title class="flex items-center">
-          <q-icon name="fa-duotone fa-terminal" class="q-mr-md" size="28px" color="grey-4" />
-          <span
-            class="text-h5 text-weight-bold"
-            style="letter-spacing: 2px; text-shadow: 0 2px 8px #2228"
-          >
-            {{ storeGlobal.app.name }}
-          </span>
-          <span class="q-ml-sm text-caption text-grey-4" style="font-style: italic">
-            v{{ storeGlobal.app.version }}
-          </span>
-        </q-toolbar-title>
-      </q-toolbar>
+  <q-layout view="lHh lpr lFf" class="shadow-2 rounded-borders">
+    <q-header elevated>
+      <q-bar class="q-electron-drag bg-grey-10">
+        <q-icon name="fa-duotone fa-microchip" size="14px" color="grey-4" />
+        <div class="text-h6 text-weight-bold q-ml-md">{{ storeGlobal.app.name }}</div>
+        <span class="q-ml-sm text-caption text-grey-4" style="font-style: italic">
+          v{{ storeGlobal.app.version }}
+        </span>
+        <q-space />
+        <q-btn
+          dense
+          flat
+          icon="fa-duotone fa-window-minimize"
+          @click="minimize"
+          size="14px"
+          color="grey-2"
+        />
+        <q-btn
+          dense
+          flat
+          icon="fa-duotone fa-window-maximize"
+          @click="toggleMaximize"
+          size="14px"
+          color="grey-2"
+        />
+        <q-btn dense flat icon="fa-duotone fa-xmark" @click="closeApp" size="22px" color="red-4" />
+      </q-bar>
     </q-header>
 
     <q-page-container>
@@ -27,4 +38,32 @@
 import { useStoreGlobal } from 'src/stores/global';
 
 const storeGlobal = useStoreGlobal();
+
+declare global {
+  interface Window {
+    myWindowAPI: {
+      minimize: () => void;
+      toggleMaximize: () => void;
+      close: () => void;
+    };
+  }
+}
+
+const minimize = () => {
+  if (process.env.MODE === 'electron') {
+    window.myWindowAPI.minimize();
+  }
+};
+
+const toggleMaximize = () => {
+  if (process.env.MODE === 'electron') {
+    window.myWindowAPI.toggleMaximize();
+  }
+};
+
+const closeApp = () => {
+  if (process.env.MODE === 'electron') {
+    window.myWindowAPI.close();
+  }
+};
 </script>

@@ -8,7 +8,7 @@
       <div class="row q-col-gutter-lg">
         <div class="col-12 col-md-6">
           <q-input
-            v-model="value"
+            :model-value="value.toString()"
             label="Значение"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -25,7 +25,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            v-model="multiply"
+            :model-value="multiply.toString()"
             label="Множитель"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -42,7 +42,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            v-model="costMain"
+            :model-value="costMain.toString()"
             label="Основная стоимость"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -59,7 +59,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            v-model="costMultiply"
+            :model-value="costMultiply.toString()"
             label="Стоимость множителя"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -107,25 +107,26 @@ import { useStoreGame } from 'src/stores/game';
 
 const storeGame = useStoreGame();
 
-const value = computed(() => storeGame.shop.hard.value.toString());
-const multiply = computed(() => storeGame.shop.hard.multiply.toString());
-const costMain = computed(() => storeGame.shop.hard.cost.main.toString());
+const value = computed(() => storeGame.shop.hard.value);
+const multiply = computed(() => storeGame.shop.hard.multiply);
+const costMain = computed(() => storeGame.shop.hard.cost.main);
+const decrease = computed(() =>
+  storeGame.research.list.costDecrease.bonus.pow(storeGame.research.list.costDecrease.level),
+);
 const costMultiply = computed(() =>
-  storeGame.shop.hard.cost.multiply.mul(storeGame.shop.hard.multiply).toString(),
+  storeGame.shop.hard.cost.multiply.mul(storeGame.shop.hard.multiply).div(decrease.value),
 );
 
 const onBuyMain = () => {
-  if (storeGame.epicNumber.gte(storeGame.shop.hard.cost.main)) {
-    storeGame.epicNumber = storeGame.epicNumber.minus(storeGame.shop.hard.cost.main);
-    storeGame.shop.hard.value = storeGame.shop.hard.value.plus(storeGame.shop.hard.multiply);
-  }
+  if (!storeGame.epicNumber.gte(storeGame.shop.hard.cost.main)) return;
+  storeGame.epicNumber = storeGame.epicNumber.minus(storeGame.shop.hard.cost.main);
+  storeGame.shop.hard.value = storeGame.shop.hard.value.plus(storeGame.shop.hard.multiply);
+  storeGame.capacity = storeGame.capacity.plus(storeGame.shop.hard.value);
 };
 
 const onBuyMultiply = () => {
-  const rent = storeGame.shop.hard.multiply.mul(storeGame.shop.hard.cost.multiply);
-  if (storeGame.shop.hard.value.gt(rent)) {
-    storeGame.shop.hard.value = storeGame.shop.hard.value.minus(rent);
-    storeGame.shop.hard.multiply = storeGame.shop.hard.multiply.plus(1);
-  }
+  if (!storeGame.shop.hard.value.gt(costMultiply.value)) return;
+  storeGame.shop.hard.value = storeGame.shop.hard.value.minus(costMultiply.value);
+  storeGame.shop.hard.multiply = storeGame.shop.hard.multiply.plus(1);
 };
 </script>

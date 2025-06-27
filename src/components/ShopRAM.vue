@@ -115,17 +115,15 @@ const costMultiply = computed(() =>
 );
 
 const onBuyMain = () => {
-  if (storeGame.epicNumber.gte(storeGame.shop.ram.cost.main)) {
-    storeGame.epicNumber = storeGame.epicNumber.minus(storeGame.shop.ram.cost.main);
-    storeGame.shop.ram.value = storeGame.shop.ram.value.plus(storeGame.shop.ram.multiply);
-  }
+  if (!storeGame.epicNumber.gte(storeGame.shop.ram.cost.main)) return;
+  storeGame.epicNumber = storeGame.epicNumber.minus(storeGame.shop.ram.cost.main);
+  storeGame.shop.ram.value = storeGame.shop.ram.value.plus(storeGame.shop.ram.multiply);
 };
 
 const onBuyMultiply = () => {
   const rent = storeGame.shop.ram.multiply.mul(storeGame.shop.ram.cost.multiply);
-  if (storeGame.shop.ram.value.gt(rent)) {
-    storeGame.shop.ram.value = storeGame.shop.ram.value.minus(rent);
-    storeGame.shop.ram.multiply = storeGame.shop.ram.multiply.plus(1);
-  }
+  if (!storeGame.shop.ram.value.gt(rent)) return;
+  storeGame.shop.ram.value = storeGame.shop.ram.value.minus(rent);
+  storeGame.shop.ram.multiply = storeGame.shop.ram.multiply.plus(1);
 };
 </script>

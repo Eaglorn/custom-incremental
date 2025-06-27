@@ -41,9 +41,9 @@
             {{ getResearch(meta.key).time }} сек
           </q-badge>
         </div>
-        <div v-if="getResearch(meta.key).maxLevel > 1">
+        <div v-if="getResearch(meta.key).maxLevel.gt(1)">
           <q-linear-progress
-            :value="getResearch(meta.key).level / getResearch(meta.key).maxLevel"
+            :value="getResearch(meta.key).level.div(getResearch(meta.key).maxLevel).toNumber()"
             color="green"
             size="6px"
             rounded
@@ -99,11 +99,11 @@ function getResearch(key: string) {
       cost: new Decimal(0),
       currentTime: new Decimal(0),
       time: new Decimal(0),
-      bonus: 0,
-      level: 0,
-      costMultiply: 1,
-      timeMultiply: 1,
-      maxLevel: 1,
+      bonus: new Decimal(0),
+      level: new Decimal(0),
+      costMultiply: new Decimal(1),
+      timeMultiply: new Decimal(1),
+      maxLevel: new Decimal(1),
     };
   return researchList[key];
 }
@@ -114,6 +114,8 @@ function startResearch(key: string) {
   const research = researchList[key];
   if (!research) return;
   if (research.level >= research.maxLevel || researchingKey.value) return;
+  if (!storeGame.epicNumber.gte(research.cost)) return;
+  storeGame.epicNumber = storeGame.epicNumber.minus(research.cost);
   storeGame.research.researchingKey = key;
   research.currentTime = research.time;
 
@@ -123,7 +125,7 @@ function startResearch(key: string) {
     }
     if (research.currentTime.lte(0)) {
       clearInterval(interval);
-      research.level++;
+      research.level = research.level.plus(1);
       research.cost = research.cost.mul(research.costMultiply);
       research.time = research.time.mul(research.timeMultiply);
       storeGame.research.researchingKey = '';
