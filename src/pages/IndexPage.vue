@@ -6,7 +6,7 @@
         <div class="row items-center justify-center" style="flex: 2 2 0; min-width: 0">
           <q-icon name="fa-duotone fa-gauge-high" size="24px" color="primary" />
           <span class="text-weight-bold text-h5 q-mx-xs">{{
-            storeGame.epicNumber.toString()
+            formatEpicNumber(storeGame.epicNumber)
           }}</span>
           <q-icon name="fa-solid fa-arrow-right" size="18px" color="grey-5" />
           <q-icon name="fa-duotone fa-database" size="24px" color="secondary" class="q-ml-xs" />
@@ -46,8 +46,8 @@
       >
         <q-tab name="shop" icon="fa-duotone fa-store" label="Магазин" />
         <q-tab name="research" icon="fa-duotone fa-flask-vial" label="Исследования" />
-        <q-tab name="infinity" icon="fa-duotone fa-infinity" label="Бесконечность" />
         <q-tab name="eternity" icon="fa-duotone fa-hourglass-end" label="Вечность" />
+        <q-tab name="infinity" icon="fa-duotone fa-infinity" label="Бесконечность" />
         <q-tab name="achievement" icon="fa-duotone fa-trophy-star" label="Достижения" />
         <q-tab name="help" icon="fa-duotone fa-circle-question" label="Помощь" />
         <q-tab name="setting" icon="fa-duotone fa-gear-complex" label="Настройки" />
@@ -111,13 +111,40 @@
             </template>
           </q-splitter>
         </q-tab-panel>
-        <q-tab-panel name="infinity"></q-tab-panel>
         <q-tab-panel name="eternity"></q-tab-panel>
+        <q-tab-panel name="infinity"></q-tab-panel>
         <q-tab-panel name="achievement"></q-tab-panel>
         <q-tab-panel name="help"></q-tab-panel>
         <q-tab-panel name="setting"></q-tab-panel>
       </q-tab-panels>
     </q-card>
+    <q-footer class="q-pa-sm bg-grey-10">
+      <div class="row items-center" style="width: 100%; justify-content: center">
+        <q-icon
+          name="fa-duotone fa-hourglass-end"
+          color="deep-purple-3"
+          size="20px"
+          class="q-mr-xs"
+        />
+        <span class="q-mr-md" style="color: #fff; font-weight: 500; font-size: 16px">
+          До вечности:
+        </span>
+        <q-linear-progress
+          :value="infinityProgress"
+          color="deep-purple-5"
+          track-color="grey-7"
+          style="width: 300px; height: 22px"
+          rounded
+          class="q-mr-md"
+        >
+          <div class="absolute-full flex flex-center">
+            <span style="color: #fff; font-weight: bold; font-size: 15px">
+              {{ (infinityProgress * 100).toFixed(2) }}%
+            </span>
+          </div>
+        </q-linear-progress>
+      </div>
+    </q-footer>
   </q-page>
 </template>
 
@@ -129,6 +156,7 @@ import ShopHard from 'src/components/ShopHard.vue';
 import ShopRAM from 'src/components/ShopRAM.vue';
 import ResearchBase from 'src/components/ResearchBase.vue';
 import { researchMeta } from 'src/constants/researchMeta';
+import Decimal from 'break_eternity.js';
 
 const storeGame = useStoreGame();
 
@@ -138,6 +166,13 @@ const innerResearch = ref('innerResearchBase');
 const splitterModel = ref(20);
 
 let timerId: ReturnType<typeof setInterval> | null = null;
+
+function formatEpicNumber(num: Decimal) {
+  const n = num.toNumber();
+  if (n < 1e6) return num.toFixed(0);
+  if (n < 1e9) return num.toExponential(2);
+  return num.toExponential(3).replace('+', '');
+}
 
 const startTimer = () => {
   if (timerId) clearInterval(timerId);
@@ -176,10 +211,18 @@ const currentResearch = computed(() => {
   const meta = researchMeta.find((m) => m.key === researchingKey.value);
   return meta || null;
 });
+
 const currentResearchTime = computed(() => {
   if (!researchingKey.value) return '';
   const research = researchList.value[researchingKey.value as ResearchKey];
   return research?.currentTime?.toFixed?.(0) ?? '';
+});
+
+const infinityProgress = computed(() => {
+  const value = storeGame.epicNumber;
+  if (value.lte(0)) return 0;
+  const percent = value.log10().divide(new Decimal('1.8e308').log10());
+  return Math.min(Math.max(percent.toNumber(), 0), 1);
 });
 </script>
 

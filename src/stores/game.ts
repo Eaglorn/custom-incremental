@@ -16,7 +16,7 @@ export const useStoreGame = defineStore('storeGame', {
           bonus: 0.01,
           level: 0,
           costMultiply: 100,
-          timeMultiply: 5,
+          timeMultiply: 2,
           maxLevel: 100,
         },
         ramPow: {
@@ -26,7 +26,7 @@ export const useStoreGame = defineStore('storeGame', {
           bonus: 0.01,
           level: 0,
           costMultiply: 150,
-          timeMultiply: 10,
+          timeMultiply: 3,
           maxLevel: 100,
         },
         costDescrease: {
@@ -36,7 +36,7 @@ export const useStoreGame = defineStore('storeGame', {
           bonus: new Decimal(2),
           level: 0,
           costMultiply: 150,
-          timeMultiply: 10,
+          timeMultiply: 5,
           maxLevel: 100,
         },
       },
@@ -48,23 +48,23 @@ export const useStoreGame = defineStore('storeGame', {
         multiply: new Decimal(1),
         cost: {
           main: new Decimal(100),
-          multiply: new Decimal(10),
+          multiply: new Decimal(5),
         },
       },
       hard: {
         value: new Decimal(0),
         multiply: new Decimal(1),
         cost: {
-          main: new Decimal(1000),
-          multiply: new Decimal(30),
+          main: new Decimal(250),
+          multiply: new Decimal(12),
         },
       },
       ram: {
         value: new Decimal(0),
         multiply: new Decimal(1),
         cost: {
-          main: new Decimal(10000000),
-          multiply: new Decimal(500),
+          main: new Decimal('1e7'),
+          multiply: new Decimal(80),
         },
       },
     },
