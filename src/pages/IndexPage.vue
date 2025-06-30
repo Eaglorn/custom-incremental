@@ -46,6 +46,7 @@
       >
         <q-tab name="shop" icon="fa-duotone fa-store" label="Магазин" />
         <q-tab name="research" icon="fa-duotone fa-flask-vial" label="Исследования" />
+        <q-tab name="automatic" icon="fa-duotone fa-microchip-ai" label="Автоматизация" />
         <q-tab name="eternity" icon="fa-duotone fa-hourglass-end" label="Вечность" />
         <q-tab name="infinity" icon="fa-duotone fa-infinity" label="Бесконечность" />
         <q-tab name="achievement" icon="fa-duotone fa-trophy-star" label="Достижения" />
@@ -111,6 +112,31 @@
             </template>
           </q-splitter>
         </q-tab-panel>
+        <q-tab-panel name="automatic">
+          <q-splitter v-model="splitterModel">
+            <template v-slot:before>
+              <q-tabs v-model="innerAutomatic" vertical class="text-teal">
+                <q-tab
+                  name="innerAutomaticBuyer"
+                  icon="fa-duotone fa-cart-shopping"
+                  label="Скупщики"
+                />
+              </q-tabs>
+            </template>
+
+            <template v-slot:after>
+              <q-tab-panels
+                v-model="innerAutomatic"
+                transition-prev="slide-down"
+                transition-next="slide-up"
+              >
+                <q-tab-panel name="innerAutomaticBuyer">
+                  <AutomaticBuyer />
+                </q-tab-panel>
+              </q-tab-panels>
+            </template>
+          </q-splitter>
+        </q-tab-panel>
         <q-tab-panel name="eternity"></q-tab-panel>
         <q-tab-panel name="infinity"></q-tab-panel>
         <q-tab-panel name="achievement"></q-tab-panel>
@@ -155,6 +181,7 @@ import ShopCPU from 'src/components/ShopCPU.vue';
 import ShopHard from 'src/components/ShopHard.vue';
 import ShopRAM from 'src/components/ShopRAM.vue';
 import ResearchBase from 'src/components/ResearchBase.vue';
+import AutomaticBuyer from 'src/components/AutomaticBuyer.vue';
 import { researchMeta } from 'src/constants/researchMeta';
 import Decimal from 'break_eternity.js';
 
@@ -164,6 +191,7 @@ const formatNumber = storeGame.formatNumber;
 const tab = ref('shop');
 const innerShop = ref('innerShopCPU');
 const innerResearch = ref('innerResearchBase');
+const innerAutomatic = ref('innerAutomaticBuyer');
 const splitterModel = ref(20);
 
 const researchingKey = computed(() => storeGame.research.researchingKey);
