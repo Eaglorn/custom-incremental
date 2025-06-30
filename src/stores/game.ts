@@ -164,7 +164,9 @@ export const useStoreGame = defineStore('storeGame', {
           loaded.research.list.cpuPow.currentTime,
         );
         this.research.list.cpuPow.level = new Decimal(loaded.research.list.cpuPow.level);
-        this.research.list.hardPow.currentTime = loaded.research.list.hardPow.currentTime;
+        this.research.list.hardPow.currentTime = new Decimal(
+          loaded.research.list.hardPow.currentTime,
+        );
         this.research.list.hardPow.level = new Decimal(loaded.research.list.hardPow.level);
         this.research.list.ramPow.currentTime = new Decimal(
           loaded.research.list.ramPow.currentTime,
