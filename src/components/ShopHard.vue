@@ -8,7 +8,7 @@
       <div class="row q-col-gutter-lg">
         <div class="col-12 col-md-6">
           <q-input
-            :model-value="value.toString()"
+            :model-value="formatNumber(value)"
             label="Значение"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -25,7 +25,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            :model-value="multiply.toString()"
+            :model-value="formatNumber(multiply)"
             label="Множитель"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -42,7 +42,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            :model-value="costMain.toString()"
+            :model-value="formatNumber(costMain)"
             label="Основная стоимость"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -59,7 +59,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            :model-value="costMultiply.toString()"
+            :model-value="formatNumber(costMultiply)"
             label="Стоимость множителя"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -104,29 +104,35 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useStoreGame } from 'src/stores/game';
+import Decimal from 'break_eternity.js';
 
 const storeGame = useStoreGame();
+const formatNumber = storeGame.formatNumber;
 
-const value = computed(() => storeGame.shop.hard.value);
-const multiply = computed(() => storeGame.shop.hard.multiply);
-const costMain = computed(() => storeGame.shop.hard.cost.main);
+const hard = storeGame.shop.hard;
+const costDecrease = storeGame.research.list.costDecrease;
+
+const value = computed(() => hard.value);
+const multiply = computed(() => hard.multiply);
+const costMain = computed(() => hard.cost.main);
 const decrease = computed(() =>
-  storeGame.research.list.costDecrease.bonus.pow(storeGame.research.list.costDecrease.level),
+  costDecrease.level.gt(0) ? costDecrease.bonus.pow(costDecrease.level) : new Decimal(1),
 );
-const costMultiply = computed(() =>
-  storeGame.shop.hard.cost.multiply.mul(storeGame.shop.hard.multiply).div(decrease.value),
-);
+const costMultiply = computed(() => hard.cost.multiply.mul(hard.multiply).div(decrease.value));
+
+const canBuyMain = computed(() => storeGame.epicNumber.gte(costMain.value));
+const canBuyMultiply = computed(() => value.value.gte(costMultiply.value));
 
 const onBuyMain = () => {
-  if (!storeGame.epicNumber.gte(storeGame.shop.hard.cost.main)) return;
-  storeGame.epicNumber = storeGame.epicNumber.minus(storeGame.shop.hard.cost.main);
-  storeGame.shop.hard.value = storeGame.shop.hard.value.plus(storeGame.shop.hard.multiply);
-  storeGame.capacity = storeGame.capacity.plus(storeGame.shop.hard.value);
+  if (!canBuyMain.value) return;
+  storeGame.epicNumber = storeGame.epicNumber.minus(costMain.value);
+  hard.value = hard.value.plus(hard.multiply);
+  storeGame.capacity = storeGame.capacity.plus(hard.value);
 };
 
 const onBuyMultiply = () => {
-  if (!storeGame.shop.hard.value.gt(costMultiply.value)) return;
-  storeGame.shop.hard.value = storeGame.shop.hard.value.minus(costMultiply.value);
-  storeGame.shop.hard.multiply = storeGame.shop.hard.multiply.plus(1);
+  if (!canBuyMultiply.value) return;
+  hard.value = hard.value.minus(costMultiply.value);
+  hard.multiply = hard.multiply.plus(1);
 };
 </script>

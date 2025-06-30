@@ -8,7 +8,7 @@
       <div class="row q-col-gutter-lg">
         <div class="col-12 col-md-6">
           <q-input
-            v-model="value"
+            :model-value="formatNumber(value)"
             label="Значение"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -25,7 +25,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            v-model="multiply"
+            :model-value="formatNumber(multiply)"
             label="Множитель"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -42,7 +42,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            v-model="costMain"
+            :model-value="formatNumber(costMain)"
             label="Основная стоимость"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -59,7 +59,7 @@
         </div>
         <div class="col-12 col-md-6">
           <q-input
-            v-model="costMultiply"
+            :model-value="formatNumber(costMultiply)"
             label="Стоимость множителя"
             class="my-ipnut q-mb-md"
             :disable="true"
@@ -104,26 +104,35 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useStoreGame } from 'src/stores/game';
+import Decimal from 'break_eternity.js';
 
 const storeGame = useStoreGame();
+const formatNumber = storeGame.formatNumber;
 
-const value = computed(() => storeGame.shop.ram.value.toString());
-const multiply = computed(() => storeGame.shop.ram.multiply.toString());
-const costMain = computed(() => storeGame.shop.ram.cost.main.toString());
-const costMultiply = computed(() =>
-  storeGame.shop.ram.cost.multiply.mul(storeGame.shop.ram.multiply).toString(),
+const ram = storeGame.shop.ram;
+const costDecrease = storeGame.research.list.costDecrease;
+
+const value = computed(() => ram.value);
+const multiply = computed(() => ram.multiply);
+const costMain = computed(() => ram.cost.main);
+const decrease = computed(() =>
+  costDecrease.level.gt(0) ? costDecrease.bonus.pow(costDecrease.level) : new Decimal(1),
 );
+const costMultiply = computed(() => ram.cost.multiply.mul(ram.multiply).div(decrease.value));
+
+const canBuyMain = computed(() => storeGame.epicNumber.gte(costMain.value));
+const canBuyMultiply = computed(() => value.value.gte(costMultiply.value));
 
 const onBuyMain = () => {
-  if (!storeGame.epicNumber.gte(storeGame.shop.ram.cost.main)) return;
-  storeGame.epicNumber = storeGame.epicNumber.minus(storeGame.shop.ram.cost.main);
-  storeGame.shop.ram.value = storeGame.shop.ram.value.plus(storeGame.shop.ram.multiply);
+  if (!canBuyMain.value) return;
+  storeGame.epicNumber = storeGame.epicNumber.minus(costMain.value);
+  ram.value = ram.value.plus(ram.multiply);
+  storeGame.capacity = storeGame.capacity.plus(ram.value);
 };
 
 const onBuyMultiply = () => {
-  const rent = storeGame.shop.ram.multiply.mul(storeGame.shop.ram.cost.multiply);
-  if (!storeGame.shop.ram.value.gt(rent)) return;
-  storeGame.shop.ram.value = storeGame.shop.ram.value.minus(rent);
-  storeGame.shop.ram.multiply = storeGame.shop.ram.multiply.plus(1);
+  if (!canBuyMultiply.value) return;
+  ram.value = ram.value.minus(costMultiply.value);
+  ram.multiply = ram.multiply.plus(1);
 };
 </script>

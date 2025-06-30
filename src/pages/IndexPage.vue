@@ -163,8 +163,6 @@ const innerShop = ref('innerShopCPU');
 const innerResearch = ref('innerResearchBase');
 const splitterModel = ref(20);
 
-let timerId: ReturnType<typeof setInterval> | null = null;
-
 function formatEpicNumber(num: Decimal) {
   const n = num.toNumber();
   if (n < 1e6) return num.toFixed(0);
@@ -172,9 +170,17 @@ function formatEpicNumber(num: Decimal) {
   return num.toExponential(3).replace('+', '');
 }
 
-const startTimer = () => {
-  if (timerId) clearInterval(timerId);
-  timerId = setInterval(() => {
+let timerId: ReturnType<typeof setInterval> | null = null;
+const autoSaveId = ref<ReturnType<typeof setInterval> | null>(null);
+let lastTick = Date.now();
+
+const gameTick = () => {
+  const now = Date.now();
+  const delta = now - lastTick;
+  lastTick = now;
+
+  const steps = Math.floor(delta / storeGame.timer) || 1;
+  for (let i = 0; i < steps; i++) {
     const parShopCPU = storeGame.shop.cpu;
     const parResearchCPU = storeGame.research.list.cpuPow;
     const parShopRAM = storeGame.shop.ram;
@@ -189,11 +195,21 @@ const startTimer = () => {
     if (storeGame.epicNumber.gt(capacityFull)) {
       storeGame.epicNumber = capacityFull;
     }
-  }, storeGame.timer);
+  }
+};
+
+const startTimer = () => {
+  if (timerId) clearInterval(timerId);
+  lastTick = Date.now();
+  timerId = setInterval(gameTick, storeGame.timer);
 };
 
 onMounted(() => {
+  storeGame.loadGame();
   startTimer();
+  autoSaveId.value = setInterval(() => {
+    storeGame.saveGame();
+  }, 1000);
 });
 
 watch(
@@ -205,6 +221,7 @@ watch(
 
 onBeforeUnmount(() => {
   if (timerId) clearInterval(timerId);
+  if (autoSaveId.value) clearInterval(autoSaveId.value);
 });
 
 const researchingKey = computed(() => storeGame.research.researchingKey);
