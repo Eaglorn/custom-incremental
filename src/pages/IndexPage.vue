@@ -6,11 +6,13 @@
         <div class="row items-center justify-center" style="flex: 2 2 0; min-width: 0">
           <q-icon name="fa-duotone fa-gauge-high" size="24px" color="primary" />
           <span class="text-weight-bold text-h5 q-mx-xs">{{
-            formatEpicNumber(storeGame.epicNumber)
+            formatNumber(storeGame.epicNumber)
           }}</span>
           <q-icon name="fa-solid fa-arrow-right" size="18px" color="grey-5" />
           <q-icon name="fa-duotone fa-database" size="24px" color="secondary" class="q-ml-xs" />
-          <span class="text-weight-bold text-h5 q-ml-xs">{{ storeGame.capacity.toString() }}</span>
+          <span class="text-weight-bold text-h5 q-ml-xs">{{
+            formatNumber(storeGame.capacity)
+          }}</span>
         </div>
         <div class="banner-research-status" style="font-size: 1rem; white-space: nowrap">
           <div v-if="currentResearch" class="row items-center">
@@ -147,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useStoreGame } from 'src/stores/game';
 import ShopCPU from 'src/components/ShopCPU.vue';
 import ShopHard from 'src/components/ShopHard.vue';
@@ -157,72 +159,12 @@ import { researchMeta } from 'src/constants/researchMeta';
 import Decimal from 'break_eternity.js';
 
 const storeGame = useStoreGame();
+const formatNumber = storeGame.formatNumber;
 
 const tab = ref('shop');
 const innerShop = ref('innerShopCPU');
 const innerResearch = ref('innerResearchBase');
 const splitterModel = ref(20);
-
-function formatEpicNumber(num: Decimal) {
-  const n = num.toNumber();
-  if (n < 1e6) return num.toFixed(0);
-  if (n < 1e9) return num.toExponential(2);
-  return num.toExponential(3).replace('+', '');
-}
-
-let timerId: ReturnType<typeof setInterval> | null = null;
-const autoSaveId = ref<ReturnType<typeof setInterval> | null>(null);
-let lastTick = Date.now();
-
-const gameTick = () => {
-  const now = Date.now();
-  const delta = now - lastTick;
-  lastTick = now;
-
-  const steps = Math.floor(delta / storeGame.timer) || 1;
-  for (let i = 0; i < steps; i++) {
-    const parShopCPU = storeGame.shop.cpu;
-    const parResearchCPU = storeGame.research.list.cpuPow;
-    const parShopRAM = storeGame.shop.ram;
-    const parResearchRAM = storeGame.research.list.ramPow;
-    storeGame.epicNumber = storeGame.epicNumber.plus(
-      parShopCPU.value.pow(parResearchCPU.bonus.mul(parResearchCPU.level).plus(1)),
-    );
-    storeGame.capacity = storeGame.capacity.plus(
-      parShopRAM.value.pow(parResearchRAM.bonus).mul(parResearchRAM.level).plus(1),
-    );
-    const capacityFull = storeGame.capacity.plus(storeGame.shop.hard.value);
-    if (storeGame.epicNumber.gt(capacityFull)) {
-      storeGame.epicNumber = capacityFull;
-    }
-  }
-};
-
-const startTimer = () => {
-  if (timerId) clearInterval(timerId);
-  lastTick = Date.now();
-  timerId = setInterval(gameTick, storeGame.timer);
-};
-
-onMounted(() => {
-  storeGame.loadGame();
-  startTimer();
-  autoSaveId.value = setInterval(() => {
-    storeGame.saveGame();
-  }, 1000);
-});
-
-watch(
-  () => storeGame.timer,
-  () => {
-    startTimer();
-  },
-);
-
-onBeforeUnmount(() => {
-  if (timerId) clearInterval(timerId);
-  if (autoSaveId.value) clearInterval(autoSaveId.value);
-});
 
 const researchingKey = computed(() => storeGame.research.researchingKey);
 const researchList = computed(() => storeGame.research.list);

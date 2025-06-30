@@ -8,8 +8,9 @@ const SECRET = 'incremental';
 
 export const useStoreGame = defineStore('storeGame', {
   state: () => ({
-    epicNumber: new Decimal(1000),
-    capacity: new Decimal(1001),
+    lastTick: Date.now(),
+    epicNumber: new Decimal('1e20'),
+    capacity: new Decimal('1e1000'),
     timer: 1000,
     shop: {
       cpu: {
@@ -41,43 +42,43 @@ export const useStoreGame = defineStore('storeGame', {
       researchingKey: '',
       list: {
         cpuPow: {
-          cost: new Decimal(3000),
+          cost: new Decimal(500),
           currentTime: new Decimal(0),
-          time: new Decimal(6),
+          time: new Decimal(2),
           bonus: new Decimal(0.01),
           level: new Decimal(0),
-          costMultiply: new Decimal(100),
-          timeMultiply: new Decimal(2),
+          costMultiply: new Decimal(5),
+          timeMultiply: new Decimal(1.4),
           maxLevel: new Decimal(100),
         },
         hardPow: {
           cost: new Decimal(5000),
           currentTime: new Decimal(0),
-          time: new Decimal(8),
+          time: new Decimal(2),
           bonus: new Decimal(0.01),
           level: new Decimal(0),
-          costMultiply: new Decimal(100),
-          timeMultiply: new Decimal(2),
+          costMultiply: new Decimal(5),
+          timeMultiply: new Decimal(1.4),
           maxLevel: new Decimal(100),
         },
         ramPow: {
           cost: new Decimal('1e6'),
           currentTime: new Decimal(0),
-          time: new Decimal(24),
+          time: new Decimal(10),
           bonus: new Decimal(0.01),
           level: new Decimal(0),
-          costMultiply: new Decimal(150),
-          timeMultiply: new Decimal(3),
+          costMultiply: new Decimal(10),
+          timeMultiply: new Decimal(1.4),
           maxLevel: new Decimal(100),
         },
         costDecrease: {
           cost: new Decimal(1000),
           currentTime: new Decimal(0),
-          time: new Decimal(10),
+          time: new Decimal(6),
           bonus: new Decimal(2),
           level: new Decimal(0),
-          costMultiply: new Decimal(150),
-          timeMultiply: new Decimal(5),
+          costMultiply: new Decimal(15),
+          timeMultiply: new Decimal(2),
           maxLevel: new Decimal(100),
         },
       },
@@ -158,7 +159,7 @@ export const useStoreGame = defineStore('storeGame', {
         this.shop.hard.multiply = new Decimal(loaded.shop.hard.multiply);
         this.shop.ram.value = new Decimal(loaded.shop.ram.value);
         this.shop.ram.multiply = new Decimal(loaded.shop.ram.multiply);
-        this.research.researchingKey = loaded.researchingKey;
+        this.research.researchingKey = loaded.research.researchingKey;
         this.research.list.cpuPow.currentTime = new Decimal(
           loaded.research.list.cpuPow.currentTime,
         );

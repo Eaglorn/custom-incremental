@@ -74,6 +74,23 @@
             </template>
           </q-input>
         </div>
+        <div class="col-12 col-md-6">
+          <q-input
+            :model-value="formatNumber(gainPerTick)"
+            label="Прирост хранилища за тик"
+            class="my-ipnut q-mb-md"
+            :disable="true"
+            dense
+            :label-class="'text-weight-bold text-body1'"
+            :input-class="'text-h6 text-primary'"
+            color="primary"
+            outlined
+          >
+            <template v-slot:prepend>
+              <q-icon name="fa-duotone fa-arrow-trend-up" />
+            </template>
+          </q-input>
+        </div>
       </div>
       <div class="row q-mt-md">
         <div class="col-6">
@@ -122,6 +139,11 @@ const costMultiply = computed(() => ram.cost.multiply.mul(ram.multiply).div(decr
 
 const canBuyMain = computed(() => storeGame.epicNumber.gte(costMain.value));
 const canBuyMultiply = computed(() => value.value.gte(costMultiply.value));
+
+const gainPerTick = computed(() => {
+  const parResearchRAM = storeGame.research.list.ramPow;
+  return value.value.pow(parResearchRAM.bonus.mul(parResearchRAM.level).plus(1));
+});
 
 const onBuyMain = () => {
   if (!canBuyMain.value) return;

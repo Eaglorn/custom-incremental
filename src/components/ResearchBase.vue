@@ -9,17 +9,11 @@
       :class="{
         'active-research': researchingKey === meta.key,
         'inactive-research':
-          (researchingKey && researchingKey !== meta.key) ||
-          getResearch(meta.key).level >= getResearch(meta.key).maxLevel,
-        'completed-research': getResearch(meta.key).level >= getResearch(meta.key).maxLevel,
+          (researchingKey && researchingKey !== meta.key) || isMaxLevel(meta.key).value,
+        'completed-research': isMaxLevel(meta.key).value,
       }"
     >
-      <div
-        v-if="getResearch(meta.key).level >= getResearch(meta.key).maxLevel"
-        class="completed-banner"
-      >
-        Завершено
-      </div>
+      <div v-if="isMaxLevel(meta.key).value" class="completed-banner">Завершено</div>
       <q-tooltip anchor="top middle" self="bottom middle" :offset="[0, 10]" class="tooltip-desc">
         <div class="tooltip-title">{{ meta.title }}</div>
         <div class="tooltip-text">
@@ -35,10 +29,10 @@
         </div>
         <div class="row items-center q-mb-xs">
           <q-badge color="primary" class="q-mr-xs" style="font-size: 11px">
-            {{ getResearch(meta.key)?.cost }}
+            {{ formatNumber(getResearchCost(meta.key).value) }}
           </q-badge>
           <q-badge color="secondary" style="font-size: 11px">
-            {{ getResearch(meta.key).time }} сек
+            {{ formatNumber(getResearchTime(meta.key).value) }} сек
           </q-badge>
         </div>
         <div v-if="getResearch(meta.key).maxLevel.gt(1)">
@@ -58,13 +52,9 @@
       <q-separator spaced class="q-my-xs" />
       <q-card-actions align="right" class="q-pa-none q-mt-auto">
         <q-btn
-          :disable="
-            (researchingKey && researchingKey !== meta.key) ||
-            getResearch(meta.key).level >= getResearch(meta.key).maxLevel
-          "
+          :disable="(researchingKey && researchingKey !== meta.key) || isMaxLevel(meta.key).value"
           :color="
-            (researchingKey && researchingKey !== meta.key) ||
-            getResearch(meta.key).level >= getResearch(meta.key).maxLevel
+            (researchingKey && researchingKey !== meta.key) || isMaxLevel(meta.key).value
               ? 'grey-6'
               : 'primary'
           "
@@ -72,10 +62,10 @@
           dense
           :label="
             researchingKey === meta.key && getResearch(meta.key).currentTime.gt(0)
-              ? `... ${getResearch(meta.key).currentTime} сек.`
+              ? `... ${formatNumber(getResearch(meta.key).currentTime)} сек.`
               : 'Улучшить'
           "
-          @click="startResearch(meta.key)"
+          @click="startResearch(meta.key, false)"
         />
       </q-card-actions>
     </q-card>
@@ -83,13 +73,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useStoreGame } from 'src/stores/game';
 import Decimal from 'break_eternity.js';
 import type { Research } from 'components/models';
 import { researchMeta } from 'src/constants/researchMeta';
 
 const storeGame = useStoreGame();
+const formatNumber = storeGame.formatNumber;
 
 const researchList = storeGame.research.list as Record<string, Research>;
 
@@ -108,30 +99,60 @@ function getResearch(key: string) {
   return researchList[key];
 }
 
+function isMaxLevel(metaKey: string) {
+  return computed(() => {
+    const research = getResearch(metaKey);
+    return research.level.gte(research.maxLevel);
+  });
+}
+
 const researchingKey = computed(() => storeGame.research.researchingKey);
 
-function startResearch(key: string) {
+function getResearchCost(key: string) {
+  const research = researchList[key];
+  if (!research) return computed(() => new Decimal(0));
+  return computed(() =>
+    research.level.eq(0)
+      ? research.cost
+      : research.cost.mul(research.costMultiply.mul(research.level)),
+  );
+}
+
+function getResearchTime(key: string) {
+  const research = researchList[key];
+  if (!research) return computed(() => new Decimal(0));
+  return computed(() =>
+    research.level.eq(0)
+      ? research.time
+      : research.time.mul(research.timeMultiply.mul(research.level)),
+  );
+}
+
+function startResearch(key: string, isLoad: boolean) {
   const research = researchList[key];
   if (!research) return;
-  if (research.level >= research.maxLevel || researchingKey.value) return;
-  if (!storeGame.epicNumber.gte(research.cost)) return;
-  storeGame.epicNumber = storeGame.epicNumber.minus(research.cost);
-  storeGame.research.researchingKey = key;
-  research.currentTime = research.time;
+  if (!isLoad) {
+    if (isMaxLevel(key).value) return;
+    if (research.currentTime.gt(0)) return;
+  }
 
-  const interval = setInterval(() => {
-    if (research.currentTime.gt(0)) {
-      research.currentTime = research.currentTime.minus(1);
-    }
-    if (research.currentTime.lte(0)) {
-      clearInterval(interval);
-      research.level = research.level.plus(1);
-      research.cost = research.cost.mul(research.costMultiply);
-      research.time = research.time.mul(research.timeMultiply);
-      storeGame.research.researchingKey = '';
-    }
-  }, storeGame.timer);
+  const cost = getResearchCost(key).value;
+  const time = getResearchTime(key).value;
+
+  if (!isLoad) {
+    if (!storeGame.epicNumber.gte(cost)) return;
+    storeGame.epicNumber = storeGame.epicNumber.minus(cost);
+    storeGame.research.researchingKey = key;
+    research.currentTime = time;
+  }
 }
+
+onMounted(() => {
+  if (storeGame.research.researchingKey != '') {
+    if (researchList[storeGame.research.researchingKey]?.currentTime.gt(0))
+      startResearch(storeGame.research.researchingKey, true);
+  }
+});
 </script>
 
 <style lang="sass">

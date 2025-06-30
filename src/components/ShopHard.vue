@@ -74,6 +74,23 @@
             </template>
           </q-input>
         </div>
+        <div class="col-12 col-md-6">
+          <q-input
+            :model-value="formatNumber(gainPerBuy)"
+            label="Прирост хранилища за за тик"
+            class="my-ipnut q-mb-md"
+            :disable="true"
+            dense
+            :label-class="'text-weight-bold text-body1'"
+            :input-class="'text-h6 text-primary'"
+            color="primary"
+            outlined
+          >
+            <template v-slot:prepend>
+              <q-icon name="fa-duotone fa-arrow-trend-up" />
+            </template>
+          </q-input>
+        </div>
       </div>
       <div class="row q-mt-md">
         <div class="col-6">
@@ -123,11 +140,16 @@ const costMultiply = computed(() => hard.cost.multiply.mul(hard.multiply).div(de
 const canBuyMain = computed(() => storeGame.epicNumber.gte(costMain.value));
 const canBuyMultiply = computed(() => value.value.gte(costMultiply.value));
 
+const gainPerBuy = computed(() => {
+  const parResearchHard = storeGame.research.list.hardPow;
+  return multiply.value.pow(parResearchHard.bonus.mul(parResearchHard.level).plus(1));
+});
+
 const onBuyMain = () => {
   if (!canBuyMain.value) return;
   storeGame.epicNumber = storeGame.epicNumber.minus(costMain.value);
   hard.value = hard.value.plus(hard.multiply);
-  storeGame.capacity = storeGame.capacity.plus(hard.value);
+  storeGame.capacity = storeGame.capacity.plus(hard.multiply);
 };
 
 const onBuyMultiply = () => {
